@@ -117,7 +117,7 @@ class NullingPulsar:
                                                                                                  nthreads=nthreads,
                                                                                                  printinterval=50)
 
-                                                                                                 
+
     """
 
     def __init__(self, on, off, M=2, component=gaussian):
@@ -128,7 +128,7 @@ class NullingPulsar:
         on and off are arrays with the intensities of pulses in the ON and OFF pulse windows
         should be of equal length
         M is the number of components (M=1 means no nulling, M=2 means standard nulling)
-        component is a function that evaluates the distribution for all of the components (currently all must be the same).        
+        component is a function that evaluates the distribution for all of the components (currently all must be the same).
         it is run with component(x, [means, stds])
         """
 
@@ -193,7 +193,7 @@ class NullingPulsar:
         """
         loglike(self, means, stds, weights)
         returns the natural log of the likelihood function
-        
+
         means and stds should be arrays of length M
         weights is an array of length M
         See http://www.astroml.org/index.html
@@ -210,7 +210,7 @@ class NullingPulsar:
         """
         logprior(self, means, stds, weights)
         returns the natural log of the prior distribution
-        
+
         means and stds should be arrays of length M
         weights is an array of length M
         """
@@ -235,9 +235,9 @@ class NullingPulsar:
 
     def BIC(self, means, stds, weights):
         """
-        BIC(self, means, stds, weights)        
+        BIC(self, means, stds, weights)
         compute the Bayesian information criterion
-        
+
         means and stds should be arrays of length M
         weights is an array of length M
         the lower the better
@@ -280,17 +280,20 @@ class NullingPulsar:
         returns the probabilities that a pulse with intensity x is from the null component
 
         means and stds should be arrays of length M
-        weights is an array of length M        
+        weights is an array of length M
         """
         pdfs = self.pdf(means, stds, weights, x)
-        return pdfs[0] / float(pdfs.sum(axis=0))
+        #return statement was erroring - rewrote it in a numpythonic way
+        return np.divide(pdfs[0], pdfs.sum(axis=0))
+        #old return:
+        #return(pdfs[0] / float(pdfs.sum(axis=0)))
 
     def __call__(self, theta):
         """
         __call__(self, theta)
 
         returns the log of the prior + the log of the likelihood
-        
+
         means=theta[:M]
         stds=theta[M:2*M]
         weights=theta[2*M:]
@@ -342,7 +345,7 @@ class NullingPulsar:
                                   nwalkers=40, niter=500, ninit=50, nthreads=4)
         means, stds, weights are the initial values to use for the fits
         if any of these is None, then computes starting values using the scikit-learn GMM routine
-        
+
         nwalkers is number of walkers
         niter is number of fit iterations (total chains = nwalkers * niter)
         ninit is number of iterations for burn-in
